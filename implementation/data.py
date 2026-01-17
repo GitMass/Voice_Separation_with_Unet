@@ -1,8 +1,9 @@
 import numpy as np
 import random
 import librosa
+import matplotlib.pyplot as plt
 
-from config import SEED
+from .config import SEED
 
 random.seed(SEED)
 
@@ -78,3 +79,32 @@ def data_feeder(mus_tracks, audio_config , batch_size) :
             # Reset
             batch_x, batch_y = [], []
 
+
+
+
+def display_spectrogram(spec, title="Spectrogram"):
+    """
+    Displays a spectrogram with proper axes and scaling.
+    
+    Args:
+        spec (np.array): Input spectrogram of shape (Freq, Time) or (Freq, Time, 1)
+        title (str): Title of the plot
+        sr (int): Sampling rate (default 8192Hz per Article)
+        hop_length (int): Hop length (default 768 per Article)
+        to_db (bool): If True, converts magnitude to decibels for display
+    """
+    plt.figure(figsize=(10, 4))
+    
+    # 1. Handle Dimensions: Remove the channel dimension (512, 12, 1) -> (512, 12)
+    if spec.ndim == 3:
+        spec = spec.squeeze()
+
+    # 2. Display
+    plt.imshow(spec, origin='lower', aspect='auto', vmin=0, vmax=1)
+    
+    plt.colorbar()
+    plt.title(title)
+    plt.xlabel("window")
+    plt.ylabel("frequency")
+    plt.tight_layout()
+    plt.show()

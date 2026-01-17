@@ -6,7 +6,7 @@ from dataclasses import dataclass
 SEED = 42
 
 # Paths
-DATASET_PATH = r"..\datasets\MUSDB18-7"
+DATASET_PATH = r"datasets\MUSDB18-7"
 
 @dataclass
 class AudioConfig:
