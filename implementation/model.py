@@ -60,7 +60,7 @@ class DecoderDeconv2DBlock(nn.Module):
 
         # batch_norm, if last layer (sigmoid) we usually do not use batch norm
         if activation == 'sigmoid':
-            self.dropout = nn.Identity()
+            self.batch_norm = nn.Identity()
         else :
             self.batch_norm = nn.BatchNorm2d(out_ch)
         
