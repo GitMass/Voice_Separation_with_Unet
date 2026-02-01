@@ -2,15 +2,18 @@ import numpy as np
 import random
 import librosa
 import matplotlib.pyplot as plt
+import torch
+from torch.utils.data import IterableDataset
+import musdb
 
-from .config import SEED
+from .config import SEED, DATASET_PATH, AudioConfig
 
 random.seed(SEED)
 
 
 
 
-def data_feeder(mus_tracks, audio_config , batch_size) : 
+def data_feeder(mus_tracks, audio_config) : 
 
     num_frames = audio_config.num_frames
     hop_length = audio_config.hop_length
@@ -20,23 +23,19 @@ def data_feeder(mus_tracks, audio_config , batch_size) :
     # sample duration
     desired_duration = num_frames * (hop_length/sample_rate)
 
-    # init batch
-    batch_x = []
-    batch_y = []
-
     while True : 
         print("fetching new track")
         
         # choose track 
         track = random.choice(mus_tracks)
 
-        # adjust load duration 
-        track.chunk_duration = desired_duration
-
         # verify duration
         if track.duration < desired_duration :
             print(f"track skipped : too short")
             continue
+
+        # adjust load duration 
+        track.chunk_duration = desired_duration
 
         # choose a starting point
         track.chunk_start = random.uniform(0, track.duration - track.chunk_duration)
@@ -53,32 +52,52 @@ def data_feeder(mus_tracks, audio_config , batch_size) :
         spec_mix = np.abs(librosa.stft(audio_mix, n_fft=n_fft, hop_length=hop_length))
         spec_vocals = np.abs(librosa.stft(audio_vocals, n_fft=n_fft, hop_length=hop_length))
 
-        # Découpe pour s'assurer qu'on a exactement 128 frames (parfois librosa ajoute 1 frame)
-        spec_mix = spec_mix[:, :num_frames]
-        spec_vocals = spec_vocals[:, :num_frames]
+        # Frames: Découpe pour s'assurer qu'on a exactement 128 frames (parfois librosa ajoute 1 frame)
+        # Freq: On passe de 513 à 512 (on retire la dernière bin Nyquist)
+        spec_mix = spec_mix[:-1, :num_frames]
+        spec_vocals = spec_vocals[:-1, :num_frames]
 
-        # Ajout de la dimension de canal (pour faire 512x128x1)
-        spec_mix = spec_mix[..., np.newaxis]
-        spec_vocals = spec_vocals[..., np.newaxis]
+        # Ajout de la dimension de canal (pour faire 1x512x128)
+        spec_mix = spec_mix[np.newaxis, :, :]       # (1, 512, 128)
+        spec_vocals = spec_vocals[np.newaxis, :, :] # (1, 512, 128)
 
         # Normalisation [0, 1] (we use the mix max)
         max_mix = np.max(spec_mix) + 1e-8
         spec_mix = spec_mix / max_mix
         spec_vocals = spec_vocals / max_mix
         
-        # Append results
-        batch_x.append(spec_mix)
-        batch_y.append(spec_vocals)
+        # convert to tensor
+        x = torch.tensor(spec_mix, dtype=torch.float32)
+        y = torch.tensor(spec_mix, dtype=torch.float32)
 
-        # Yield du Batch
-        if len(batch_x) == batch_size:
-            # Conversion en array numpy: (batch_size, 513, 128, 1)
-            # Note: 513 bins car n_fft//2 + 1. L'article dit 512, ils ignorent souvent la fréquence Nyquist (la dernière bin)
-            yield np.array(batch_x)[:, :-1, :, :], np.array(batch_y)[:, :-1, :, :]
-            
-            # Reset
-            batch_x, batch_y = [], []
+        # Yield of the example
+        yield (x, y)
+        
 
+
+
+
+class SingingVoiceDataset(IterableDataset) :
+
+    def __init__(self, split='train'):
+        
+        # init database
+        self.mus = musdb.DB(root=DATASET_PATH, download=False, subsets='train')
+        self.audio_config = AudioConfig()
+
+        # train validation split (80%)
+        all_tracks = self.mus.tracks
+        random.shuffle(all_tracks)
+        split_idx = int(0.8 * len(all_tracks))
+        if split == 'train' : 
+            self.tracks = all_tracks[:split_idx]
+        elif split == 'validation' :
+            self.tracks = all_tracks[split_idx:]
+
+    def __iter__(self):
+        # We call our previously defined datafeeder
+        return data_feeder(self.tracks, self.audio_config, batch_size=1)
+        
 
 
 
