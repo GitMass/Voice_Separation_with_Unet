@@ -7,6 +7,7 @@ SEED = 42
 
 # Paths
 DATASET_PATH = r"datasets\MUSDB18-full"
+CHECKPOINTS_PATH = r"checkpoints"
 
 @dataclass
 class AudioConfig:
