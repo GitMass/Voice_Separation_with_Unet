@@ -111,7 +111,7 @@ class UnetSeparator(nn.Module) :
 
         # 2. Decoder (6 EncoderConv2DBlock blocks), dropout in the first 3 layers
         self.up_blocks = nn.ModuleList([
-            DecoderDeconv2DBlock(base_channels * 32, base_channels * 16, dropout=0.5),      # 512 → 256
+            DecoderDeconv2DBlock(base_channels * 32, base_channels * 16, dropout=0.5),        # 512 → 256
             DecoderDeconv2DBlock(base_channels * 16*2, base_channels * 8, dropout=0.5),       # 256+256 → 128
             DecoderDeconv2DBlock(base_channels * 8*2, base_channels * 4, dropout=0.5),        # 128+128 → 64
             DecoderDeconv2DBlock(base_channels * 4*2, base_channels * 2),                     # 64+64 → 32
@@ -130,7 +130,7 @@ class UnetSeparator(nn.Module) :
         e4 = self.down_blocks[4](e3)
         e5 = self.down_blocks[5](e4)
 
-        # encoder 
+        # decoder 
         d0 = self.up_blocks[0](e5)
         d1 = self.up_blocks[1](torch.cat([d0, e4], dim=1))
         d2 = self.up_blocks[2](torch.cat([d1, e3], dim=1))
