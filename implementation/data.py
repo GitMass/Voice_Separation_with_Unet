@@ -70,7 +70,7 @@ def data_feeder(mus_tracks, audio_config, num_samples) :
             
             # convert to tensor
             x = torch.tensor(spec_mix, dtype=torch.float32)
-            y = torch.tensor(spec_mix, dtype=torch.float32)
+            y = torch.tensor(spec_vocals, dtype=torch.float32)
 
             # Yield of the example
             yield (x, y)
