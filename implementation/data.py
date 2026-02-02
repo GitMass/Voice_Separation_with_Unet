@@ -6,7 +6,7 @@ import torch
 from torch.utils.data import IterableDataset
 import musdb
 
-from .config import SEED, DATASET_PATH, AudioConfig
+from config import SEED, DATASET_PATH, AudioConfig
 
 random.seed(SEED)
 

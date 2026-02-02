@@ -1,7 +1,5 @@
-﻿Datasets/MUSDB18-7
+﻿*.zip
+
+Datasets/MUSDB18-7
 Datasets/MUSDB18-full
-*.zip
 implementation/__pycache__
-checkpoints
-*.wav
-*.mp3
