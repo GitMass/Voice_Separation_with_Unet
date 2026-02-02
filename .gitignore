@@ -3,3 +3,5 @@ Datasets/MUSDB18-full
 *.zip
 implementation/__pycache__
 checkpoints
+*.wav
+*.mp3

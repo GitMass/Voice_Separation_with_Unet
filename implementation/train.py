@@ -184,7 +184,6 @@ def save_training_history(json_path):
     plot_path = os.path.join(os.path.dirname(json_path), "training_curve.png")
     plt.savefig(plot_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Plot saved to {plot_path}")
 
 
 
