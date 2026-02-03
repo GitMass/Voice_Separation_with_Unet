@@ -1,3 +1,0 @@
-1 - "Donne moi tout les prérequis académique et Explique moi tout ce qu'il y a dans l'article "SINGING VOICE SEPARATION WITH DEEP U-NET CONVOLUTIONAL NETWORKS 2017" [article.pdf]"
-
-2 - "what is the object mus and what is its structure"
