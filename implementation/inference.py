@@ -6,8 +6,8 @@ import argparse
 import matplotlib.pyplot as plt
 import os
 
-from model import UnetSeparator
-from config import AudioConfig, CHECKPOINT_PATH, INFERENCE_RESULTS_PATH
+from .model import UnetSeparator
+from .config import AudioConfig, CHECKPOINT_PATH, INFERENCE_RESULTS_PATH
 
 # Configuration
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
     # Exemple d'utilisation
     # Vous pouvez changer le chemin ici vers un fichier wav de test
-    test_file = "datasets/MUSDB18-7/test/Bobby Nobody - Stitch Up.stem.mp4" 
+    test_file = "datasets/MUSDB18-7/test/Enda Reilly - Cur An Long Ag Seol.stem.mp4" 
 
     # run separation
     separate_audio(test_file, model)

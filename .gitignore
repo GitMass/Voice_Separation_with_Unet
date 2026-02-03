@@ -3,3 +3,5 @@
 Datasets/MUSDB18-7
 Datasets/MUSDB18-full
 implementation/__pycache__
+checkpoints/training_2026-02-02_23-40-43
+*.pt
